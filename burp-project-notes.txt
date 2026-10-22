@@ -1,0 +1,28 @@
+BURP PROJECT NOTES - WEEK 5 - OWASP JUICE SHOP
+
+Target: http://localhost:3000
+
+1. HTTP History Filters Used:
+   - Filter: rest/user/login
+     Purpose: Find login request (POST) to show authentication flow
+     Result: Found POST /rest/user/login -> returns Bearer JWT token
+
+   - Filter: rest/basket
+     Purpose: Find authenticated basket request
+     Result: Found GET /rest/basket/6 -> 200 OK
+     Next test: Changed to /rest/basket/5 -> 200 OK (IDOR - A01 Broken Access Control)
+
+   - Filter: rest/products/search
+     Purpose: Find API search request
+     Result: Found GET /rest/products/search?q=apple -> shows user input q controls DB query
+     Risk: Potential Injection A03:2021
+
+2. Observations:
+   - All authenticated requests use Authorization: Bearer header
+   - User-controlled IDs (basket ID) not validated server-side
+   - Search parameter q appears directly in server request - needs server-side validation
+
+3. Tools Used:
+   - Burp Proxy (Intercept OFF, HTTP history ON)
+   - Target Site Map for application structure
+   - Browser DevTools Network tab to trace q parameter
